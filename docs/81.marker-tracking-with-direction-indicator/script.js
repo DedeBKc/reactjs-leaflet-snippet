@@ -7,6 +7,9 @@
 const config = {
   minZoom: 7,
   maxZoom: 18,
+  scrollWheelZoom: "center",
+  doubleClickZoom: "center",
+  touchZoom: "center",
 };
 // magnification with which the map will start
 const zoom = 18;
@@ -137,10 +140,9 @@ class MarkerTracker {
       return;
     }
 
-    // Calculate direction from map center to marker
+    // Calculate direction from current map center to marker
     const mapCenter = this.map.getCenter();
     const angle = this.calculateBearing(mapCenter, markerLatLng);
-    const distance = mapCenter.distanceTo(markerLatLng);
     const markerData = this.selectedMarker;
 
     // Create direction indicator
@@ -202,6 +204,10 @@ class MarkerTracker {
         // Clamp to viewport bounds with individual padding for each edge
         x = Math.max(paddingLeft, Math.min(x, mapWidth - paddingRight));
         y = Math.max(paddingTop, Math.min(y, mapHeight - paddingBottom));
+
+        // Distance from indicator position (viewport edge) to marker - zoom-independent
+        const indicatorLatLng = map.containerPointToLatLng(L.point(x, y));
+        const distance = indicatorLatLng.distanceTo(markerLatLng);
 
         // Calculate angle from indicator position to marker (in screen coordinates)
         // dy is inverted because screen Y goes down
